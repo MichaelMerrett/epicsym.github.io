@@ -405,7 +405,6 @@
             for (let item of itemList) {
                 item.update(0);
             };
-            console.log(selectedItem.gravityForce.y)
         };
         function dynVX() {
             selectedItem.vel.x = Number(document.getElementById("dynvx").value);
@@ -414,7 +413,7 @@
             };
         };
         function dynVY() {
-            selectedItem.vel.y = Number(document.getElementById("dynvy").value);
+            selectedItem.vel.y = Number(document.getElementById("dynvy").value) * -1;
             for (let item of itemList) {
                 item.update(0);
             };
@@ -589,7 +588,6 @@
                 copyableText[i] = copyableText[i].join(", ");
             };
             copyableText = copyableText.join("\n");
-            console.log(copyableText);
 
             var text = document.createElement("textarea");
             text.value = copyableText;
@@ -668,9 +666,8 @@
                     frtnzone = new StaticBox(itemList.length + 1, 13, 10, 5, 1, 0.8);
                     frictionZones.push(frtnzone)
                 } else {
-                    console.log("Maximum number of friction zones reached")
-                }
-                console.log(itemList)
+                    console.log("Maximum number of friction zones reached");
+                };
             } else if (itemType == 5) {
                 //Bring up problem detail editor
                 document.getElementById("info").style.display = "none";
