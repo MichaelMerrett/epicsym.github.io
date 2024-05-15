@@ -1,29 +1,4 @@
 /**
- * Sorts level list by difficulty and by order
- * @param {array} list Unsorted list
- * @param {int} order Direction to sort by
- * @return {array} Sorted list
- */
-function insertionSort(listForSorting, order) {
-    // Sorts the list using insertion method, we recognize that this replaces the existing list, however since the list is multiple layers deep, using simple list cloning methods doesn't work.
-    var length = listForSorting.length;
-    var temp;
-    // starting should be one because we check the second item in the list first
-    for (let starting = 1; starting < length; starting++) {
-        for (let i = starting; i > 0; i--) {
-            if ((parseInt(listForSorting[i][2][1]) * order) < (parseInt(listForSorting[i - 1][2][1]) * order)) {
-                temp = listForSorting[i];
-                listForSorting[i] = listForSorting[i - 1];
-                listForSorting[i - 1] = temp;
-            } else {
-                break;
-            };
-        };
-    };
-    return (listForSorting);
-};
-
-/**
  * Runs at the start of the program, loads all images and reads CSV file 
  */
 function preload() {
@@ -102,6 +77,31 @@ function setup() {
 
     //Set dimensions on startup, this also loads the current levelID
     windowResized();
+};
+
+/**
+ * Sorts level list by difficulty and by order
+ * @param {array} list Unsorted list
+ * @param {int} order Direction to sort by
+ * @return {array} Sorted list
+ */
+function insertionSort(listForSorting, order) {
+    // Sorts the list using insertion method, we recognize that this replaces the existing list, however since the list is multiple layers deep, using simple list cloning methods doesn't work.
+    var length = listForSorting.length;
+    var temp;
+    // starting should be one because we check the second item in the list first
+    for (let starting = 1; starting < length; starting++) {
+        for (let i = starting; i > 0; i--) {
+            if ((parseInt(listForSorting[i][2][1]) * order) < (parseInt(listForSorting[i - 1][2][1]) * order)) {
+                temp = listForSorting[i];
+                listForSorting[i] = listForSorting[i - 1];
+                listForSorting[i - 1] = temp;
+            } else {
+                break;
+            };
+        };
+    };
+    return (listForSorting);
 };
 
 // function drawRope(x1, y1, x2, y2) {
