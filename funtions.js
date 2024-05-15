@@ -243,7 +243,7 @@ function loadLevel(levelID) {
                             };
                         } else if (temp[0] == "y-Velocity") {
                             tempInput.oninput = function() {
-                                itemList[i - 6].vel.y = Number(tempInput.value);
+                                itemList[i - 6].vel.y = Number(tempInput.value) * -1;
                                 for (let item of itemList) {
                                     item.update(0);
                                 };
