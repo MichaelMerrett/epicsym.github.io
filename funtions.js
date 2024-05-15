@@ -4,23 +4,23 @@
  * @param {int} order Direction to sort by
  * @return {array} Sorted list
  */
-function insertionSort(list, order) {
+function insertionSort(listForSorting, order) {
     // Sorts the list using insertion method, we recognize that this replaces the existing list, however since the list is multiple layers deep, using simple list cloning methods doesn't work.
-    var length = list.length;
+    var length = listForSorting.length;
     var temp;
     // starting should be one because we check the second item in the list first
     for (let starting = 1; starting < length; starting++) {
         for (let i = starting; i > 0; i--) {
-            if ((parseInt(list[i][2][1]) * order) < (parseInt(list[i - 1][2][1]) * order)) {
-                temp = list[i];
-                list[i] = list[i - 1];
-                list[i - 1] = temp;
+            if ((parseInt(listForSorting[i][2][1]) * order) < (parseInt(listForSorting[i - 1][2][1]) * order)) {
+                temp = listForSorting[i];
+                listForSorting[i] = listForSorting[i - 1];
+                listForSorting[i - 1] = temp;
             } else {
                 break;
             };
         };
     };
-    return (list);
+    return (listForSorting);
 };
 
 /**
