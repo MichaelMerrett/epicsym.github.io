@@ -1,0 +1,47 @@
+
+Box freefall
+Kinematics
+Very easy, 1
+Calculate the height of a box given the time it would take to hit the ground.
+Time:1.1:s, Gravitational Field Strength:9.8:N/m
+NA
+B, staticBox, 0, -1, 18, 1, 0
+A, box, 8, Height;0;5.929;0.1;0;8;0.5, 3, 2, 25, 0, 0
+
+Box on a ramp
+Ramps, Friction
+Medium, 3
+Calculate the lowest coefficient of friction needed so that the object doesn't slide down the ramp.
+Gravitational Field Strength:9.8:N/m
+NA
+C, staticBox, 0, -1, 18, 1, 0
+B, ramp, 4, 10, 10, 30, Friction Coefficient;0.1;0.57735;0.023;0.1;1;0.05
+A, box, 10, 0, 2, 2, Mass:45:kg, 0, 0
+
+Simple collision
+Momentum
+Easy, 2
+Calculate the final velocity of an object given initial velocities and mass (Assume that there is no friction).
+NA
+A, B, 2, 6
+C, staticBox, 0, -1, 18, 1, 0
+A, box, 1, 0, 2, 2, Mass:30:kg, x-Velocity;0;4;0.5;0;10;1, 0
+B, box, 4, 0, 1, 2, Mass:20:kg, x-Velocity:3:m/s, 0
+
+Projectiles
+Projectile Motion
+Easy, 2
+Calculate the initial velocity of an object being launched off a table
+Gravitational Field Strength:9.8:N/m, x-Distance traveled from edge of table before hitting the ground:4:m
+NA
+C, staticBox, 0, -1, 18, 1, 0.5
+A, box, 6, 2, 1, 1, 10, x-Velocity;0;6.26;0.1;-10;10;0.1, 0
+B, staticBox, 3, 0, 5, 2, 0
+D, staticBox, 11, -0.5, 3, 0.5, 0.5
+
+Energy Problem
+Energy
+Easy, 2
+Test
+NA
+NA

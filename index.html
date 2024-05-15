@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1" />
+    <title>EpicSym</title>
+
+    <!-- p5.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+
+    <!-- p5.Collide2D -->
+    <script src="https://cdn.jsdelivr.net/npm/p5.collide2d"></script>
+
+    <!-- p5.patgrad.js -->
+    <script src="https://cdn.jsdelivr.net/gh/antiboredom/p5.patgrad/p5.patgrad.js"></script>
+
+    <script src="main.js"></script>
+    <script src="classes.js"></script>
+    <script src="funtions.js"></script>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+
+    <div id="p5_loading" class="loadingClass">
+        Loading
+    </div>
+
+    <div id="p5canvas"></div>
+    <!-- Main menu screen -->
+    <div class="optionsBar" id="options">
+        <div class="menuSideBar" id="menu">
+            <button onclick="start(true)">Start</button>
+
+            <button onclick="start(false)">Problem Creator</button>
+        </div>
+        <!-- Problem Select Screen -->
+        <div class="filterSideBar" id="filters">
+            <!-- Subject Checkboxes -->
+            <div style="display: flex; flex-direction: column; gap: 2vh; background-color: #d1d1d1; box-shadow: 0vw 0px 2vw #000; padding: 2vh; border-radius: 2vw; border-width: 2vw; border: 0.25vw solid #787878;">
+
+                <div style="display: flex; flex-direction: row;">
+                    <input class="checkbox" type="checkbox" id="Projectile" onclick="updateSubjects()" checked>
+                        <label class="checkbox" style="width:85%;" for="Projectile">&nbsp;&nbsp;Projectile Motion</label>
+                    </input>
+                </div>
+
+                <div style="display: flex; flex-direction: row;">
+                    <input class="checkbox" type="checkbox" id="Energy" onclick="updateSubjects()" checked>
+                        <label class="checkbox" style="width:85%" for="Energy">&nbsp;&nbsp;Energy</label>
+                    </input>
+                </div>
+
+                <div style="display: flex; flex-direction: row;">
+                    <input class="checkbox" type="checkbox" id="Ramps" onclick="updateSubjects()" checked>
+                        <label class="checkbox" style="width: 85%;" for="Ramps">&nbsp;&nbsp;Ramps</label>
+                    </input>
+                </div>
+
+                <div style="display: flex; flex-direction: row;">
+                    <input class="checkbox" type="checkbox" id="Momentum" onclick="updateSubjects()" checked>
+                        <label class="checkbox" style="width: 85%;" for="Momentum">&nbsp;&nbsp;Momentum</label>
+                    </input>
+                </div>
+
+                <div style="display: flex; flex-direction: row;">
+                    <input class="checkbox" type="checkbox" id="Kinematics" onclick="updateSubjects()" checked>
+                        <label class="checkbox" style="width: 85%;" for="Kinematics">&nbsp;&nbsp;Kinematics</label>
+                    </input>
+                </div>
+
+                <div style="display: flex; flex-direction: row;">
+                    <input class="checkbox" type="checkbox" id="Friction" onclick="updateSubjects()" checked>
+                        <label class="checkbox" style="width: 85%;" for="Friction">&nbsp;&nbsp;Friction</label>
+                    </input>
+                </div>
+            </div>
+
+            <!-- Easy to Hard Sort & back bottons -->
+            <div class="bottomButtons">
+                <button onclick="swapSortDir()" id="swapSortDirection">Hard to Easy</button>
+                <button onclick="back()">Back</button>
+            </div>
+        </div>
+        
+        <!-- Problems Screen -->
+        <div class="simulationSideBar" id="simulation">
+            <!-- Givens & solutions -->
+            <div class="givensPage" id="givensPage">
+                Given:
+                <br></br>
+                <div class="givens" id="givens"></div>
+            </div>
+            <div class="inputsPage" id="inputsPage">
+                Solve:
+                <br></br>
+                <div class="inputs" id="inputs"></div>
+            </div>
+            <!-- Problem Description Screen -->
+            <div id="fullProblemTitle" style="font-size: 30%;display: none;"></div>
+            <div class="fullProblem" id="fullProblem"></div>
+
+            <div class="bottomButtons" id="bottom">
+                <button onclick="showTheForces()" id="toggleForces" style="height: 25%; font-size: 18%; width: 70%;">Toggle Forces</button>
+                <button onclick="showProblem()" id="toggleProblem">View Problem</button>
+            </div>
+
+        </div>
+        <!-- Problem Creator -->
+        <div class="problemCreation" id="problemCreation">
+            <div class="creationPage" id="info">
+                <!-- Add new items -->
+                <div style="display: flex; flex-direction: column; gap: 2vh; font-size: 65%;">
+                    <div style="display: flex; flex-direction: row; gap: 2vh;">
+                        <button style="width: 50%; height: 10vh;" onclick="newItem(1)">New Dynamic Box</button>
+                        <button style="width: 50%; height: 10vh;" onclick="newItem(2)">New Static Box</button>
+                    </div>
+                    <div style="display: flex; flex-direction: row; gap: 2vh;">
+                        <button style="width: 50%; height: 10vh;" onclick="newItem(3)">New Ramp</button>
+                        <button style="width: 50%; height: 10vh;" onclick="newItem(4)">New Friction Zone</button>
+                    </div>
+                </div>
+                <!-- Add momentum & global givens -->
+                <button style="width: 100%; height: 8vh;" onclick="newItem(7)">Collisions/Givens</button>
+                <!-- Add problem title and description -->
+                <button style="width: 100%; height: 8vh; background-color: lightgray;" onclick="newItem(5)">Problem Details</button>
+                <!-- Copy Level to clipboard & preview Buttons -->
+                <div style="width: 80%; display: flex; flex-direction: column; align-items: center; position: absolute; bottom:4vh; gap: 2vh">
+                    <button style="background-color: #A3EBEF; color: #0E6166; border-color: #44888C;" onclick="preview()">Preview</button>
+                    <button style="background-color: #e3beeb; color: #3a2a3d; border-color: #7f5b87;" onclick="copyLevelData()">Copy Level Data</button> 
+                </div>
+            </div>
+            <!-- Dynamic box inputs -->
+            <div style="display: none; height: 100%; float: right;" class="inputsPage" id="dynbox">
+                <div id="dynboxTitle" style="justify-content: center; display: flex;"></div>
+                <div style="height:2%;font-size:1px;">&nbsp;</div>
+                <div style="font-size: 50%;">
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="text" id="dynid" placeholder="ID" maxlength="3" oninput="itemID('dynid')"></input>ID&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="dynx" placeholder="xPos" step="0.5" oninput="itemPosX('dynx')"></input>x Position&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="dyny" placeholder="yPos" step="0.5" oninput="itemPosY('dyny')"></input>y Position&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="dynw" placeholder="Width" step="0.5" oninput="itemW('dynw')"></input>Width&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="dynh" placeholder="Height" step="0.5" oninput="itemH('dynh')"></input>Height&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="dynm" placeholder="Mass" step="0.5" oninput="dynMass()"></input>Mass&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="dynvx" placeholder="xVel" step="0.5" oninput="dynVX()"></input>x Velocity&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="dynvy" placeholder="yVel" step="0.5" oninput="dynVY()"></input>y Velocity&nbsp;</div>
+
+                    <br>
+                    <select style="width: 100%;" id="attributeSelection1">
+                        <option value="pos.x">x Position</option>
+                        <option value="pos.y">y Position</option>
+                        <option value="w">Width</option>
+                        <option value="h">Height</option>
+                        <option value="mass">Mass</option>
+                        <option value="vel.x">x Velocity</option>
+                        <option value="vel.y">y Velocity</option>
+                    </select>
+                    <br> <br>
+                    <div style="display: flex; flex-direction: row; font-size: 250%; padding-top: 0.25vh; padding-bottom: 0.25vh; width: 100%;">
+                        <button style="padding-inline: 0; height: fit-content; padding: 1vh;" onclick="addGiven(false)">Make Given</button>
+                        <button style="padding-inline: 0; height: fit-content; padding: 1vh;" onclick="addSolution(false)">Make Solution</button>
+                    </div>
+                    <div style="display: flex; flex-direction: row; font-size: 250%; padding-top: 0.25vh; padding-bottom: 0.25vh; width: 100%;">
+                        <button style="padding-inline: 0; height: fit-content; padding: 1vh;" onclick="addGiven(true)">Remove Givens</button>
+                        <button style="padding-inline: 0; height: fit-content; padding: 1vh;" onclick="addSolution(true)">Remove Solutions</button>
+                    </div>
+
+                    <div style="height:2%;font-size:1px;">&nbsp;</div>
+                    <button style="color: #e08080; font-size: 100%; padding-inline: 0; height: fit-content; padding: 1vh;" onclick="deleteItem()">Delete</button>
+                </div>
+            </div>
+            <!-- Static box inputs -->
+            <div style="display: none; height: 100%;" class="inputsPage" id="statbox">
+                <div id="statboxTitle" style="justify-content: center; display: flex;"></div>
+                <div style="height:2%;font-size:1px;">&nbsp;</div>
+                <div style="font-size: 50%; margin-right: 0;">
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="text" id="statid" placeholder="ID" maxlength="3" oninput="itemID('statid')"></input>ID&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="statx" placeholder="xPos" step="0.5" oninput="itemPosX('statx')"></input>x Position&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="staty" placeholder="yPos" step="0.5" oninput="itemPosY('staty')"></input>y Position&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="statw" placeholder="Width" step="0.5" oninput="itemW('statw')"></input>Width&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="stath" placeholder="Height" step="0.5" oninput="itemH('stath')"></input>Height&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="statf" placeholder="Friction" step="0.1" oninput="itemFriction('statf')"></input>Friction&nbsp;</div>
+
+                    <br>
+                    <select style="width: 100%;" id="attributeSelection2">
+                        <option value="pos.x">x Position</option>
+                        <option value="pos.y">y Position</option>
+                        <option value="w">Width</option>
+                        <option value="h">Height</option>
+                        <option value="frictionCoefficient">Friction</option>
+                    </select>
+                    <br> <br>
+                    <div style="display: flex; flex-direction: row; font-size: 250%; padding-top: 0.5vh; padding-bottom: 0.5vh;">
+                        <button style="padding-inline: 0; height: fit-content; padding: 1vh;" onclick="addGiven(false)">Make Given</button>
+                        <button style="padding-inline: 0; height: fit-content; padding: 1vh;" onclick="addSolution(false)">Make Solution</button>
+                    </div>
+                    <div style="display: flex; flex-direction: row; font-size: 250%; padding-top: 0.5vh; padding-bottom: 0.5vh;">
+                        <button style="padding-inline: 0; height: fit-content; padding: 1vh;" onclick="addGiven(true)">Remove Givens</button>
+                        <button style="padding-inline: 0; height: fit-content; padding: 1vh;" onclick="addSolution(true)">Remove Solutions</button>
+                    </div>
+
+                    <div style="height:2%;font-size:1px;">&nbsp;</div>
+                    <button style="color: #e08080; font-size: 100%; padding-inline: 0; height: fit-content; padding: 1vh;" onclick="deleteItem()">Delete</button>
+                </div>
+            </div>
+            <!-- Ramps box inputs -->
+            <div style="display: none; height: 100%;" class="inputsPage" id="ramp">
+                <div id="rampTitle" style="justify-content: center; display: flex;"></div>
+                <div style="height:2%;font-size:1px;">&nbsp;</div>
+                <div style="font-size: 50%; margin-right: 0;">
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="text" id="rampid" placeholder="ID" maxlength="3" oninput="itemID('rampid')"></input>ID&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="rampx" placeholder="xPos" step="1" oninput="rampX()"></input>x Position&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="rampy" placeholder="yPos" step="1" oninput="rampY()"></input>y Position&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="rampl" placeholder="Length" step="1" oninput="rampLength()"></input>Length&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="rampa" placeholder="Angle" step="1" oninput="rampAngle()"></input>Angle&nbsp;</div>
+                    <div style="display: flex; flex-direction: row-reverse; align-items: center;"><input type="number" inputmode="decimal" id="rampf" placeholder="Friction" step="0.1" oninput="itemFriction('rampf')"></input>Friction&nbsp;</div>
+
+                    <br>
+                    <select style="width: 100%;" id="attributeSelection3">
+                        <option value="p1x">x Position</option>
+                        <option value="p1y">y Position</option>
+                        <option value="length">Length</option>
+                        <option value="angle">Angle</option>
+                        <option value="frictionCoefficient">Friction</option>
+                    </select>
+                    <br> <br>
+                    <div style="display: flex; flex-direction: row; font-size: 250%; padding-top: 0.5vh; padding-bottom: 0.5vh;">
+                        <button style="padding-inline: 0; height: fit-content; padding: 1vh;" onclick="addGiven(false)">Make Given</button>
+                        <button style="padding-inline: 0; height: fit-content; padding: 1vh;" onclick="addSolution(false)">Make Solution</button>
+                    </div>
+                    <div style="display: flex; flex-direction: row; font-size: 250%; padding-top: 0.5vh; padding-bottom: 0.5vh;">
+                        <button style="padding-inline: 0; height: fit-content; padding: 1vh;" onclick="addGiven(true)">Remove Givens</button>
+                        <button style="padding-inline: 0; height: fit-content; padding: 1vh;" onclick="addSolution(true)">Remove Solutions</button>
+                    </div>
+                    
+                    <div style="height:2%;font-size:1px;">&nbsp;</div>
+                    <button style="color: #e08080; font-size: 100%; padding-inline: 0; height: fit-content; padding: 1vh;" onclick="deleteItem()">Delete</button>
+                </div>
+            </div>
+            
+            <div style="display: none; flex-direction: column; height: 100%; gap: 2vh; font-size: 20%;" class="inputsPage" id="problemDesc">
+                <input style="word-wrap: break-word; height: 5vh; width: 100%;" placeholder="Title" id="problemTitleEdit" type="text"></input>
+                <textarea style="word-wrap: break-word; resize: none; height: 15vh; width: 100%; font-size: 60%;" placeholder="Instructions" id="problemDescEdit"></textarea>
+                <!-- Difficulty -->
+                <select style="width: 100%;" id="difficultySelection">
+                    <option value="1">Very Easy</option>
+                    <option value="2">Easy</option>
+                    <option value="3">Medium</option>
+                    <option value="4">Hard</option>
+                    <option value="5">Very Hard</option>
+                </select>
+                <!-- Add subjects -->
+                <div style="font-size: 300%; display: flex; flex-direction: column; background-color: #d1d1d1; gap: 0; box-shadow: 0vw 0px 0.5vw #000; padding: 2vh; border-radius: 2vw; border-width: 2vw; border: 0.25vw solid #787878;">
+                   
+                    <div style="display: flex; flex-direction: row;">
+                        <input style="width: 2vh; height: 2vh;" class="checkbox" type="checkbox" id="editProjectile" onclick="editSubjects()">
+                            <label class="checkbox" style="width:85%;" for="editProjectile">&nbsp;&nbsp;Projectile Motion</label>
+                        </input>
+                    </div>
+
+                    <div style="display: flex; flex-direction: row;">
+                       <input style="width: 2vh; height: 2vh;" class="checkbox" type="checkbox" id="editEnergy" onclick="editSubjects()">
+                           <label class="checkbox" style="width:85%;" for="editEnergy">&nbsp;&nbsp;Energy</label>
+                       </input>
+                    </div>
+
+                    <div style="display: flex; flex-direction: row;">
+                       <input style="width: 2vh; height: 2vh;" class="checkbox" type="checkbox" id="editRamps" onclick="editSubjects()">
+                           <label class="checkbox" style="width:85%;" for="editRamps">&nbsp;&nbsp;Ramps</label>
+                       </input>
+                    </div>
+
+                    <div style="display: flex; flex-direction: row;">
+                          <input style="width: 2vh; height: 2vh;" class="checkbox" type="checkbox" id="editMomentum" onclick="editSubjects()">
+                              <label class="checkbox" style="width:85%;" for="editMomentum">&nbsp;&nbsp;Momentum</label>
+                          </input>
+                    </div>
+                   
+                    <div style="display: flex; flex-direction: row;">
+                          <input style="width: 2vh; height: 2vh;" class="checkbox" type="checkbox" id="editKinematics" onclick="editSubjects()">
+                              <label class="checkbox" style="width:85%;" for="editKinematics">&nbsp;&nbsp;Kinematics</label>
+                          </input>
+                    </div>
+                   
+                    <div style="display: flex; flex-direction: row;">
+                          <input style="width: 2vh; height: 2vh;" class="checkbox" type="checkbox" id="editFriction" onclick="editSubjects()">
+                              <label class="checkbox" style="width:85%;" for="editFriction">&nbsp;&nbsp;Friction</label>
+                          </input>
+                    </div>
+                </div>
+            </div>
+            <!-- Momentum -->
+            <div style="display: none; height: 100%;" class="inputsPage" id="collisions">
+                <div style="display: flex; flex-direction: column; gap: 1vh;">
+                    <div style="display: flex; flex-direction: row; gap: 1vh;">
+                        <input type="text" id="id1" placeholder="Id_1" maxlength="3"></input>
+                        <input type="text" id="id2" placeholder="Id_2" maxlength="3"></input>
+                    </div>
+                    <div style="display: flex; flex-direction: row; gap: 1vh;">
+                        <input type="text" id="vf1" placeholder="Vf_1" maxlength="9"></input>
+                        <input type="text" id="vf2" placeholder="Vf_2" maxlength="9"></input>
+                    </div>
+                    <button style="width: 100%; height: 10vh; font-size: 100%;" onclick="newItem(8)" id="newCollisionButton">New collision</button>
+                    
+                    <br>
+                    <button style="width: 100%; height: 5vh; font-size: 65%;" onclick="newItem(6)" id="newGivenButton">New given</button>
+                    <input style="word-wrap: break-word; height: 5vh; width: 100%; font-size: 75%;" placeholder="Title:Value:Units" id="addedGiven" type="text"></input>
+                    <div style="font-size: 40%">&nbsp;&nbsp;Example: Time:1.5:s</div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Seperate script area for all item attribute changers -->
+    <script>
+
+        function deleteItem() {
+            if (confirm("This will delete this item. Proceed?")) {
+                for (let i = 0; i < itemList.length; i++) {
+                    if (selectedItem.index == itemList[i].index) {
+                        itemList.splice(i, 1);
+                    };
+                };
+                for (let i = 0; i < itemList.length; i++) {
+                    itemList[i].index = i;
+                };
+                selectedItem = "none"
+                document.getElementById("problemDesc").style.display = "none";
+                document.getElementById("dynbox").style.display = "none";
+                document.getElementById("statbox").style.display = "none";
+                document.getElementById("ramp").style.display = "none";
+                document.getElementById("collisions").style.display = "none";
+                document.getElementById("info").style.display = "flex";
+            };
+        }
+        
+        function editSubjects() {
+            checkedBoxes = [];
+            if (document.getElementById("editKinematics").checked) {
+                checkedBoxes.push("Kinematics");
+            };
+            if (document.getElementById("editEnergy").checked) {
+                checkedBoxes.push("Energy");
+            };
+            if (document.getElementById("editProjectile").checked) {
+                checkedBoxes.push("Projectile Motion");
+            };
+            if (document.getElementById("editMomentum").checked) {
+                checkedBoxes.push("Momentum");
+            };
+            if (document.getElementById("editRamps").checked) {
+                checkedBoxes.push("Ramps");
+            };
+            if (document.getElementById("editFriction").checked) {
+                checkedBoxes.push("Friction");
+            };
+        };
+
+        //Get Item attributes & update them
+        //Dynamic & Static Boxes
+        function itemID(id) {
+            selectedItem.id = document.getElementById(id).value;
+            if (selectedItem.collider == "dynamic") {
+                document.getElementById("dynboxTitle").innerHTML = selectedItem.id + " Dynamic Box";
+            } else if (selectedItem.collider == "static") {
+                document.getElementById("statboxTitle").innerHTML = selectedItem.id + " Static Box";
+            } else {
+                document.getElementById("rampTitle").innerHTML = selectedItem.id + " Ramp";
+            };
+        };
+        function itemPosX(id) {
+            selectedItem.pos.x = Number(document.getElementById(id).value);
+            for (let item of itemList) {
+                item.update(0);
+            };
+        };
+        function itemPosY(id) {
+            selectedItem.pos.y = 10 - Number(document.getElementById(id).value) - selectedItem.h;
+            for (let item of itemList) {
+                item.update(0);
+            };
+        };
+        function itemW(id) {
+            selectedItem.w = Number(document.getElementById(id).value);
+            for (let item of itemList) {
+                item.update(0);
+            };
+        };
+        function itemH(id) {
+            selectedItem.h = Number(document.getElementById(id).value);
+            for (let item of itemList) {
+                item.update(0);
+            };
+        };
+        function dynMass() {
+            if (Number(document.getElementById("dynm").value) <= 0) {
+                selectedItem.mass = 0.001;
+            } else {
+                selectedItem.mass = Number(document.getElementById("dynm").value);
+            };
+
+            
+            selectedItem.gravityForce.y = selectedItem.mass * selectedItem.gravity
+            for (let item of itemList) {
+                item.update(0);
+            };
+            console.log(selectedItem.gravityForce.y)
+        };
+        function dynVX() {
+            selectedItem.vel.x = Number(document.getElementById("dynvx").value);
+            for (let item of itemList) {
+                item.update(0);
+            };
+        };
+        function dynVY() {
+            selectedItem.vel.y = Number(document.getElementById("dynvy").value);
+            for (let item of itemList) {
+                item.update(0);
+            };
+        };
+
+        //Ramps
+        function rampX() {
+            selectedItem.p1x = Number(document.getElementById("rampx").value)
+            selectedItem.p2x = selectedItem.p1x + selectedItem.length;
+            selectedItem.p2y = selectedItem.p1y;
+            selectedItem.p3x = selectedItem.p1x + selectedItem.length;
+            selectedItem.p3y = selectedItem.p1y - (Math.tan(PI / 180 * selectedItem.angle) * abs(selectedItem.length));
+            selectedItem.poly = [createVector(selectedItem.p1x, selectedItem.p1y), createVector(selectedItem.p2x, selectedItem.p2y), createVector(selectedItem.p3x, selectedItem.p3y)];
+            for (let item of itemList) {
+                item.update(0);
+            };
+        };
+        function rampY() {
+            selectedItem.p1y = Number(document.getElementById("rampy").value)
+            selectedItem.p2x = selectedItem.p1x + selectedItem.length;
+            selectedItem.p2y = selectedItem.p1y;
+            selectedItem.p3x = selectedItem.p1x + selectedItem.length;
+            selectedItem.p3y = selectedItem.p1y - (Math.tan(PI / 180 * selectedItem.angle) * abs(selectedItem.length));
+            selectedItem.poly = [createVector(selectedItem.p1x, selectedItem.p1y), createVector(selectedItem.p2x, selectedItem.p2y), createVector(selectedItem.p3x, selectedItem.p3y)];
+            for (let item of itemList) {
+                item.update(0);
+            };
+        };
+        function rampLength() {
+            selectedItem.length = Number(document.getElementById("rampl").value)
+            selectedItem.p2x = selectedItem.p1x + selectedItem.length;
+            selectedItem.p2y = selectedItem.p1y;
+            selectedItem.p3x = selectedItem.p1x + selectedItem.length;
+            selectedItem.p3y = selectedItem.p1y - (Math.tan(PI / 180 * selectedItem.angle) * abs(selectedItem.length));
+            selectedItem.poly = [createVector(selectedItem.p1x, selectedItem.p1y), createVector(selectedItem.p2x, selectedItem.p2y), createVector(selectedItem.p3x, selectedItem.p3y)];
+            for (let item of itemList) {
+                item.update(0);
+            };
+        }
+        function rampAngle() {
+            selectedItem.angle = Number(document.getElementById("rampa").value)
+            selectedItem.p2x = selectedItem.p1x + selectedItem.length;
+            selectedItem.p2y = selectedItem.p1y;
+            selectedItem.p3x = selectedItem.p1x + selectedItem.length;
+            selectedItem.p3y = selectedItem.p1y - (Math.tan(PI / 180 * selectedItem.angle) * abs(selectedItem.length));
+            selectedItem.poly = [createVector(selectedItem.p1x, selectedItem.p1y), createVector(selectedItem.p2x, selectedItem.p2y), createVector(selectedItem.p3x, selectedItem.p3y)];
+            for (let item of itemList) {
+                item.update(0);
+            };
+        }
+        function itemFriction(id) {
+            selectedItem.frictionCoefficient = Number(document.getElementById(id).value);
+            for (let item of itemList) {
+                item.update(0);
+            };
+        };
+        //Get value of and add Item ID plus selected given to a list of givens
+        function addGiven(removeGivens) {
+            if (removeGivens && confirm("This will remove all givens attached to this item. Proceed?")) {
+                for (let i = 0; i < newGivens.length; i++) {
+                    if (selectedItem.index == newGivens[i][0].index) {
+                        newGivens.splice(i, 1);
+                    };
+                };
+            } else {
+                var temp;
+                if (selectedItem.collider == "dynamic") {
+                    temp = document.getElementById("attributeSelection1").value;
+                } else if (selectedItem.collider == "static") {
+                    temp = document.getElementById("attributeSelection2").value;
+                } else {
+                    temp = document.getElementById("attributeSelection3").value;
+                };
+                newGivens.push([selectedItem, temp]);
+            }
+        };
+
+        //Get value of and add Item ID, selected solution attribute and it's value to a list of solutions
+        function addSolution(removeSolutions) {
+            if (removeSolutions == true && confirm("This will remove all solutions attached to this item. Proceed?")) {
+                for (let i = 0; i < newInputs.length; i++) {
+                    if (selectedItem == newInputs[i][0]) {
+                        newInputs.splice(i, 1)
+                    }
+                }
+            } else {
+                var temp;
+                if (selectedItem.collider == "dynamic") {
+                    temp = document.getElementById("attributeSelection1").value;
+                } else if (selectedItem.collider == "static") {
+                    temp = document.getElementById("attributeSelection2").value;
+                } else {
+                    temp = document.getElementById("attributeSelection3").value;
+                };
+                var temp1;
+                if (temp == "pos.x") {
+                    temp1 = selectedItem.pos.x;
+                } else if (temp == "pos.y") {
+                    temp1 = selectedItem.pos.y;
+                } else if (temp == "w") {
+                    temp1 = selectedItem.w;
+                } else if (temp == "h") {
+                    temp1 = selectedItem.h;
+                } else if (temp == "mass") {
+                    temp1 = selectedItem.mass;
+                } else if (temp == "vel.x") {
+                    temp1 = selectedItem.vel.x;
+                } else if (temp == "vel.y") {
+                    temp1 = selectedItem.vel.y;
+                } else if (temp == "p1x") {
+                    temp1 = selectedItem.p1x;
+                } else if (temp == "p1y") {
+                    temp1 = selectedItem.p1y;
+                } else if (temp == "length") {
+                    temp1 = selectedItem.length;
+                } else if (temp == "angle") {
+                    temp1 = selectedItem.angle;
+                } else if (temp == "frictionCoefficient") {
+                    temp1 = selectedItem.frictionCoefficient;
+                };
+                newInputs.push([selectedItem, temp, temp1]);
+            };
+        };
+    </script>
+
+    <script>
+        function start(x) {
+            if (x) {
+                unloadLevel()
+                updateSubjects()
+                document.getElementById("menu").style.display = "none";
+                document.getElementById("filters").style.display = "flex";
+                level = 2;
+
+                document.getElementById("inputsPage").style.display = "block";
+                document.getElementById("givensPage").style.display = "block";
+            } else if (confirm("This is difficult to use on mobile, and is not for student use. Proceed?")) {
+                unloadLevel();
+                document.getElementById("menu").style.display = "none";
+                document.getElementById("problemCreation").style.display = "flex";
+                level = 4;
+            };
+        };
+        function showTheForces() {
+            if (displayForces) {
+                displayForces = false
+            } else {
+                displayForces = true
+            } 
+        }
+        function preview() {
+            previewMode = true;
+            selectedProblem = 1;
+            createLevelFromList(itemList, newGivens, newInputs)
+            document.getElementById("problemCreation").style.display = "none";
+            document.getElementById("simulation").style.display = "flex";
+            level = 3;
+            unloadLevel();
+            loadLevel(selectedProblem);
+        };
+
+        function copyLevelData() {
+            selectedProblem = 1;
+            if (createLevelFromList(itemList, newGivens, newInputs)) {
+                alert("Copied level data to clipboard");
+            } else {
+                alert("Please select at least one subject in the Problem Details section");
+            };
+            
+            let copyableText = newLevelData.slice();
+            for (let i = 0; i < copyableText.length; i++) {
+                copyableText[i] = copyableText[i].join(", ");
+            };
+            copyableText = copyableText.join("\n");
+            console.log(copyableText);
+
+            var text = document.createElement("textarea");
+            text.value = copyableText;
+            document.body.appendChild(text);
+            text.select();
+            document.execCommand("copy");
+            document.body.removeChild(text);
+        };
+        
+        function updateSubjects() {
+            //check for which check boxes are checked
+            pageNum = 1
+            var uncheckedBoxes = []
+            if (document.getElementById("Kinematics").checked == false) {
+                uncheckedBoxes.push("Kinematics")
+            };
+            if (document.getElementById("Energy").checked == false) {
+                uncheckedBoxes.push("Energy")
+            };
+            if (document.getElementById("Projectile").checked == false) {
+                uncheckedBoxes.push("Projectile Motion");
+            };
+            if (document.getElementById("Momentum").checked == false) {
+                uncheckedBoxes.push("Momentum");
+            };
+            if (document.getElementById("Ramps").checked == false) {
+                uncheckedBoxes.push("Ramps");
+            };
+            if (document.getElementById("Friction").checked == false) {
+                uncheckedBoxes.push("Friction");
+            };
+            
+            shownLevels = [];
+            for (let i = 0; i < levelData.length; i++) {
+                var addLevel = true;
+                for (let p of uncheckedBoxes) {
+                    if (levelData[i][1].includes(p)) {
+                        addLevel = false
+                    };
+                };
+                if (addLevel == true) {
+                    shownLevels.push(levelData[i])
+                };
+            };
+            shownLevels = insertionSort(shownLevels, problemOrder);
+        };
+
+        function newItem(itemType) {
+            if (itemType == 1) {
+                dynbox = new DynamicBox(itemList.length + 1, 9, 5, 1, 1, 10, 0, 0);   
+            } else if (itemType == 2) {
+                stabox = new StaticBox(itemList.length + 1, 12, 8, 3, 2, 0.5);
+            } else if (itemType == 3) {
+                rmp = new Ramp(itemList.length + 1, 0, 10, 3, 30, 0.5);
+            } else if (itemType == 4) {
+                var frtnzone;
+                if (frictionZones.length == 0) {
+                    frtnzone = new StaticBox(itemList.length + 1, 0, 10, 18, 1, 0.2);
+                    frictionZones.push(frtnzone)
+                } else if (frictionZones.length == 1) {
+                    frictionZones[0].w = 9
+                    frtnzone = new StaticBox(itemList.length + 1, 9, 10, 9, 1, 0.4);
+                    frictionZones.push(frtnzone)
+                } else if (frictionZones.length == 2) {
+                    frictionZones[0].w = 6
+                    frictionZones[1].pos.x = 6
+                    frictionZones[1].w = 6
+                    frtnzone = new StaticBox(itemList.length + 1, 12, 10, 6, 1, 0.6);
+                    frictionZones.push(frtnzone)
+                } else if (frictionZones.length == 3) {
+                    frictionZones[0].w = 5
+                    frictionZones[1].pos.x = 5
+                    frictionZones[1].w = 4
+                    frictionZones[2].pos.x = 9
+                    frictionZones[2].w = 4
+                    frtnzone = new StaticBox(itemList.length + 1, 13, 10, 5, 1, 0.8);
+                    frictionZones.push(frtnzone)
+                } else {
+                    console.log("Maximum number of friction zones reached")
+                }
+                console.log(itemList)
+            } else if (itemType == 5) {
+                //Bring up problem detail editor
+                document.getElementById("info").style.display = "none";
+                document.getElementById("problemDesc").style.display = "flex";
+            } else if (itemType == 6) {
+                //Add new global given
+                var numColons = 0;
+                if (document.getElementById("addedGiven").value != "") {
+                    for (let i = 0; i < String(document.getElementById("addedGiven").value).length; i++) {
+                        if (String(document.getElementById("addedGiven").value)[i] == ":") {
+                            numColons ++;
+                        };
+                    };
+                };
+                if (numColons == 2) {
+                    newGlobalGivens.push(String(document.getElementById("addedGiven").value))
+                } else {
+                    document.getElementById("newGivenButton").innerHTML = "Check formatting";
+                    document.getElementById("newGivenButton").style.background = "lightgray";
+                    document.getElementById("newGivenButton").disabled = true;
+                    setTimeout(function (){
+                        document.getElementById("newGivenButton").innerHTML = "New given";
+                        document.getElementById("newGivenButton").style.background = "whitesmoke";
+                        document.getElementById("newGivenButton").disabled = false;
+                    }, 1000);
+                }
+            } else if (itemType == 7) {
+                document.getElementById("collisions").style.display = "flex"
+                document.getElementById("info").style.display = "none"
+            } else if (itemType == 8) {
+                if (document.getElementById("id1").value == "") {
+                    document.getElementById("newCollisionButton").innerHTML = "Check Id_1";
+                    document.getElementById("newCollisionButton").style.background = "lightgray";
+                    document.getElementById("newCollisionButton").disabled = true;
+                    setTimeout(function (){
+                        document.getElementById("newCollisionButton").innerHTML = "New collision";
+                        document.getElementById("newCollisionButton").style.background = "whitesmoke";
+                        document.getElementById("newCollisionButton").disabled = false;
+                    }, 1000);
+                } else if (document.getElementById("id2").value == "") {
+                    document.getElementById("newCollisionButton").innerHTML = "Check Id_2";
+                    document.getElementById("newCollisionButton").style.background = "lightgray";
+                    document.getElementById("newCollisionButton").disabled = true;
+                    setTimeout(function (){
+                        document.getElementById("newCollisionButton").innerHTML = "New collision";
+                        document.getElementById("newCollisionButton").style.background = "whitesmoke";
+                        document.getElementById("newCollisionButton").disabled = false;
+                    }, 1000);
+                } else if (document.getElementById("vf1").value == "") {
+                    document.getElementById("newCollisionButton").innerHTML = "Check Vf_1";
+                    document.getElementById("newCollisionButton").style.background = "lightgray";
+                    document.getElementById("newCollisionButton").disabled = true;
+                    setTimeout(function (){
+                        document.getElementById("newCollisionButton").innerHTML = "New collision";
+                        document.getElementById("newCollisionButton").style.background = "whitesmoke";
+                        document.getElementById("newCollisionButton").disabled = false;
+                    }, 1000);
+                } else if (document.getElementById("vf2").value == "") {
+                    document.getElementById("newCollisionButton").innerHTML = "Check Vf_2";
+                    document.getElementById("newCollisionButton").style.background = "lightgray";
+                    document.getElementById("newCollisionButton").disabled = true;
+                    setTimeout(function (){
+                        document.getElementById("newCollisionButton").innerHTML = "New collision";
+                        document.getElementById("newCollisionButton").style.background = "whitesmoke";
+                        document.getElementById("newCollisionButton").disabled = false;
+                    }, 1000);
+                } else {
+                    newCollisions.push([document.getElementById("id1").value, document.getElementById("id2").value, document.getElementById("vf1").value, document.getElementById("vf2").value]);
+                };
+            };
+            for (let item of itemList) {
+                item.update(0);
+            };
+        };
+
+        function swapSortDir() {
+            problemOrder *= -1;
+            shownLevels = insertionSort(shownLevels, problemOrder);
+            if (problemOrder == -1) {
+                document.getElementById("swapSortDirection").innerHTML = "Easy to Hard";
+            } else {
+                document.getElementById("swapSortDirection").innerHTML = "Hard to Easy";
+            };
+        };
+
+        function back() {
+            loadLevel(selectedProblem)
+            var menu = document.getElementById("menu")
+            menu.style.display = "flex"
+            var filters = document.getElementById("filters")
+            filters.style.display = "none"
+            level = 1
+        }
+
+        function showProblem() {
+            if (document.getElementById("givensPage").style.display == "block") {
+                document.getElementById("inputsPage").style.display = "none"
+                document.getElementById("givensPage").style.display = "none"
+                document.getElementById("fullProblem").style.display = "block"
+                document.getElementById("fullProblemTitle").style.display = "block"
+                document.getElementById("toggleProblem").innerHTML = "Hide Problem"
+            } else {
+                document.getElementById("inputsPage").style.display = "block"
+                document.getElementById("givensPage").style.display = "block"
+                document.getElementById("fullProblem").style.display = "none"
+                document.getElementById("fullProblemTitle").style.display = "none"
+                document.getElementById("toggleProblem").innerHTML = "View Problem"
+            }
+        }
+
+        //Pause object updates while user is in another tab
+        document.addEventListener("visibilitychange", (event) => {
+            deltaTime = 1
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+    <script>
+        confetti1 = new JSConfetti();
+    </script>
+</body>
+
+</html>
