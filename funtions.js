@@ -8,6 +8,9 @@ function preload() {
     levelFile.onload = function() {
         allText = levelFile.responseText;
         allTextLines = allText.split(/\r\n|\n/); // removing new lines
+        if (allTextLines[allTextLines.length - 1] == "") {
+            allTextLines.pop()
+        };
 
         for (let i = 0; i < allTextLines.length; i++) {
             singleLine = allTextLines[i].split(", ");
