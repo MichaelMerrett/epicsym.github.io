@@ -354,7 +354,7 @@ class DynamicBox extends Item {
                     if (collideRectRect(this.pos.x, this.pos.y, this.w, this.h, other.pos.x, other.pos.y, other.w, other.h) == true) {
                         //If a collision got to here, it means a collision is occuring, its not with itself, this is a dynamic collider, and the item that the collision is happening with has not already calculated a collision with this item
 
-                        if (this.pos.y + this.h >= other.pos.y && prevPosY + this.h < other.pos.y - (other.vel.y * (cappedDeltaTime / 1000))) {
+                        if (this.pos.y + this.h >= other.pos.y && prevPosY + this.h < other.pos.y - (other.vel.y * (cappedDeltaTime / 1000)) && (other.w != 3 && other.h != 0.5)) {
                             //collision from above (this lands on something)
                             this.pos.y = other.pos.y - this.h - 0.001;
                             this.vel.y = other.vel.y;
