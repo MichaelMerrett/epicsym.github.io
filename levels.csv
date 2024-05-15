@@ -6,7 +6,7 @@ Calculate the height of a box given the time it would take to hit the ground.
 Time:1.1:s, Gravitational Field Strength:9.8:N/m
 NA
 B, staticBox, 0, -1, 18, 1, 0
-A, box, 8, Height;0;5.929;0.1;0;8;0.5, 3, 2, 25, 0, 0
+A, box, 8, y-Position;0;5.929;0.1;0;8;0.5, 3, 2, 25, 0, 0
 
 Box on a ramp
 Ramps, Friction
