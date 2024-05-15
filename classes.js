@@ -243,6 +243,23 @@ class DynamicBox extends Item {
     };
 
     /**
+     * Resets this item's sprite
+    */
+    refreshSprite() {
+        if (this.w == 1 && this.h == 1) {
+            this.sprite = [smallBox1, smallBox2, smallBox3][Math.round(Math.random() * 2)];
+        } else if (this.w == 1 && this.h == 2) {
+            this.sprite = [longBoxVertical1, longBoxVertical2][Math.round(Math.random() * 1)];
+        } else if (this.w == 3 && this.h == 2) {
+            this.sprite = Box3x2;
+        } else if (this.w == 2 && this.h == 2) {
+            this.sprite = largeBox1;
+        } else {
+            this.sprite = smallBox1;
+        };
+    };
+
+    /**
      * Display all object's forces converted to newtons with directions
      */
     showForces() {
@@ -591,6 +608,17 @@ class StaticBox extends Item {
         } else if (this.w == 3 && this.h == 0.5) {
             this.sprite = targetImg
         }
+    };
+
+    /**
+     * Resets this item's sprite
+    */
+    refreshSprite() {
+        if (this.w == 5 && this.h == 2) {
+            this.sprite = tableImg;
+        } else if (this.w == 3 && this.h == 0.5) {
+            this.sprite = targetImg;
+        };
     };
 
     /**
