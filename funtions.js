@@ -1,4 +1,29 @@
 /**
+ * Sorts level list by difficulty and by order
+ * @param {array} list Unsorted list
+ * @param {int} order Direction to sort by
+ * @return {array} Sorted list
+ */
+function insertionSort(listForSorting, order) {
+    // Sorts the list using insertion method, we recognize that this replaces the existing list, however since the list is multiple layers deep, using simple list cloning methods doesn't work.
+    var length = listForSorting.length;
+    var temp;
+    // starting should be one because we check the second item in the list first
+    for (let starting = 1; starting < length; starting++) {
+        for (let i = starting; i > 0; i--) {
+            if ((parseInt(listForSorting[i][2][1]) * order) < (parseInt(listForSorting[i - 1][2][1]) * order)) {
+                temp = listForSorting[i];
+                listForSorting[i] = listForSorting[i - 1];
+                listForSorting[i - 1] = temp;
+            } else {
+                break;
+            };
+        };
+    };
+    return (listForSorting);
+};
+
+/**
  * Runs at the start of the program, loads all images and reads CSV file 
  */
 function preload() {
@@ -80,31 +105,6 @@ function setup() {
 
     //Set dimensions on startup, this also loads the current levelID
     windowResized();
-};
-
-/**
- * Sorts level list by difficulty and by order
- * @param {array} list Unsorted list
- * @param {int} order Direction to sort by
- * @return {array} Sorted list
- */
-function insertionSort(listForSorting, order) {
-    // Sorts the list using insertion method, we recognize that this replaces the existing list, however since the list is multiple layers deep, using simple list cloning methods doesn't work.
-    var length = listForSorting.length;
-    var temp;
-    // starting should be one because we check the second item in the list first
-    for (let starting = 1; starting < length; starting++) {
-        for (let i = starting; i > 0; i--) {
-            if ((parseInt(listForSorting[i][2][1]) * order) < (parseInt(listForSorting[i - 1][2][1]) * order)) {
-                temp = listForSorting[i];
-                listForSorting[i] = listForSorting[i - 1];
-                listForSorting[i - 1] = temp;
-            } else {
-                break;
-            };
-        };
-    };
-    return (listForSorting);
 };
 
 // function drawRope(x1, y1, x2, y2) {
@@ -652,7 +652,7 @@ function mousePressed() {
                         document.getElementById("dynh").value = selectedItem.h;
                         document.getElementById("dynm").value = selectedItem.mass;
                         document.getElementById("dynvx").value = selectedItem.vel.x;
-                        document.getElementById("dynvy").value = selectedItem.vel.y;
+                        document.getElementById("dynvy").value = selectedItem.vel.y * -1;
                     } else if (selectedItem.collider == "static") {
                         document.getElementById("statid").value = selectedItem.id;
                         document.getElementById("statx").value = selectedItem.pos.x;
@@ -837,11 +837,11 @@ function createLevelFromList(items, givens, inputs) {
                 } else if (input[1] == "h") {
                     slot5 = "Height;"+String(input[0].h)+";"+String(input[2])+";"+String(input[2] / 10)+";0.5;10;0.5";
                 } else if (input[1] == "mass") {
-                    slot6 = "Mass;"+String(input[0].mass)+";"+String(input[2])+";"+String(input[2] / 10)+";0;500;1";
+                    slot6 = "Mass;"+String(input[0].mass)+";"+String(input[2])+";"+String(input[2] / 10)+";0;999;1";
                 } else if (input[1] == "vel.x") {
-                    slot7 = "x-Velocity;"+String(input[0].vel.x)+";"+String(input[2])+";"+String(input[2] / 10)+";0;25;1";
+                    slot7 = "x-Velocity;"+String(input[0].vel.x)+";"+String(input[2])+";"+String(input[2] / 10)+";-25;25;1";
                 } else if (input[1] == "vel.y") {
-                    slot8 = "y-Velocity;"+String(input[0].vel.y)+";"+String(input[2])+";"+String(input[2] / 10)+";0;25;1";
+                    slot8 = "y-Velocity;"+String(input[0].vel.y)+";"+String(input[2])+";"+String(input[2] / 10)+";-25;25;1";
                 } else if (input[1] == "p1x") {
                     slot9 = "x-Ramp Origin;"+String(input[0].p1x)+";"+String(input[2])+";"+String(input[2] / 10)+";0;18;0.5";
                 } else if (input[1] == "p1y") {
